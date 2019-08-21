@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <com.example.colorslider.ColorDialView
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:paddingLeft="20dp"
         android:paddingTop="20dp"
@@ -12,6 +12,7 @@
         android:paddingBottom="20dp"
         app:tickPadding="60dp"
         app:tickRadius="24dp"
-        app:dialDiameter="200dp"/>
+        app:dialDiameter="200dp"
+        app:scaleToFit="true"/>
 
 </FrameLayout>
