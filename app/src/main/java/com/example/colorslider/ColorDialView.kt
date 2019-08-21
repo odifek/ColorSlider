@@ -52,6 +52,22 @@ class ColorDialView @JvmOverloads constructor(
 
 
     init {
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ColorDialView)
+        try {
+            val customColors = typedArray.getTextArray(R.styleable.ColorSlider_colors)
+                ?.map { Color.parseColor(it.toString()) }
+                    as ArrayList<Int>?
+            customColors?.let { colors = customColors }
+            dialDiameter =
+                typedArray.getDimension(R.styleable.ColorDialView_dialDiameter, toDp(100).toFloat())
+                    .toInt()
+            extraPadding = typedArray
+                .getDimension(R.styleable.ColorDialView_tickPadding, toDp(30).toFloat()).toInt()
+            tickSize = typedArray
+                .getDimension(R.styleable.ColorDialView_tickRadius, toDp(10).toFloat())
+        } finally {
+            typedArray.recycle()
+        }
         dialDrawable = context.getDrawable(R.drawable.ic_dial).also {
             it?.bounds = getCenteredBounds(dialDiameter)
             it?.setTint(Color.DKGRAY)
@@ -88,6 +104,14 @@ class ColorDialView @JvmOverloads constructor(
         canvas.translate(centerHorizontal, centerVertical)
         dialDrawable?.draw(canvas)
 
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+
+        val width = resolveSizeAndState(horizontalSize.toInt(), widthMeasureSpec, 0)
+        val height = resolveSizeAndState(verticalSize.toInt(), heightMeasureSpec, 0)
+
+        setMeasuredDimension(width, height)
     }
 
     private fun refreshValues() {

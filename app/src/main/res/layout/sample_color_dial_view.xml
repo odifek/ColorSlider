@@ -7,6 +7,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="20dp"
-        android:paddingBottom="40dp" />
+        android:paddingTop="20dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="20dp"
+        app:tickPadding="60dp"
+        app:tickRadius="24dp"
+        app:dialDiameter="200dp"/>
 
 </FrameLayout>

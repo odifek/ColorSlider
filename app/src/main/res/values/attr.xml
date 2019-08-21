@@ -4,4 +4,11 @@
     <declare-styleable name="ColorSlider">
         <attr name="colors"/>
     </declare-styleable>
+
+    <declare-styleable name="ColorDialView">
+        <attr name="colors"/>
+        <attr name="tickRadius" format="dimension"/>
+        <attr name="tickPadding" format="dimension"/>
+        <attr name="dialDiameter" format="dimension"/>
+    </declare-styleable>
 </resources>
