@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.widget.SeekBar
 import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.core.content.ContextCompat
@@ -19,8 +20,8 @@ class ColorSlider @JvmOverloads constructor(
 
     private var colors: ArrayList<Int> = arrayListOf(Color.RED, Color.YELLOW, Color.BLUE)
 
-    private val w = 48
-    private val h = 48
+    private val w = getPixelValueFromDp(24f)
+    private val h = getPixelValueFromDp(24f)
     private val halfW = if (w >= 0) w / 2f else 1f
     private val halfH = if (h >= 0) h / 2f else 1f
 
@@ -56,7 +57,7 @@ class ColorSlider @JvmOverloads constructor(
             ContextCompat.getColorStateList(context, android.R.color.transparent)
         progressTintList = ContextCompat.getColorStateList(context, android.R.color.transparent)
         splitTrack = false
-        setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom + 80)
+        setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom + getPixelValueFromDp(16f).toInt() )
         thumb = context.getDrawable(R.drawable.ic_arrow_drop_down)
 
         setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
@@ -94,7 +95,7 @@ class ColorSlider @JvmOverloads constructor(
         canvas?.let { canvas ->
             val count = colors.size
             val saveCount = canvas.save()
-            canvas.translate(paddingLeft.toFloat(), (height / 2).toFloat() + 50f)
+            canvas.translate(paddingLeft.toFloat(), (height / 2).toFloat() + getPixelValueFromDp(16f))
             if (count > 1) {
                 for (i in 0 until count) {
                     val spacing = (width - paddingLeft - paddingRight) / (count - 1).toFloat()
@@ -111,6 +112,10 @@ class ColorSlider @JvmOverloads constructor(
                 canvas.restoreToCount(saveCount)
             }
         }
+    }
+
+    private fun getPixelValueFromDp(value: Float) : Float {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, context.resources.displayMetrics)
     }
 
     private var listeners: ArrayList<(Int) -> Unit> = arrayListOf()
