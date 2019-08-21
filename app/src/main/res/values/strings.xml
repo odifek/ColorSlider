@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Color Slider</string>
+
+    <string-array name="color_array">
+        <item>#FFC107</item>
+        <item>#03A9F4</item>
+        <item>#4CAF50</item>
+        <item>#F44336</item>
+        <item>#673AB7</item>
+        <item>#B88615</item>
+        <item>#3F51B5</item>
+    </string-array>
 </resources>
