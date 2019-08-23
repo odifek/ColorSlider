@@ -8,7 +8,11 @@ import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.MotionEvent
+import android.view.MotionEvent.*
 import android.view.View
+import kotlin.math.atan2
+import kotlin.math.roundToInt
 
 
 class ColorDialView @JvmOverloads constructor(
@@ -53,6 +57,13 @@ class ColorDialView @JvmOverloads constructor(
     // Pre-computed position values
     private var centerHorizontal = 0f
     private var centerVertical = 0f
+
+    // View Interaction values
+    private var dragStartX = 0f
+    private var dragStartY = 0f
+    private var dragging = false
+    private var snapAngle = 0f
+    private var selectedPosition = 0
 
 
     init {
@@ -106,6 +117,7 @@ class ColorDialView @JvmOverloads constructor(
             canvas.rotate(angleBetweenColors, centerHorizontal, centerVertical)
         }
         canvas.restoreToCount(saveCount)
+        canvas.rotate(snapAngle, centerHorizontal, centerVertical)
         canvas.translate(centerHorizontal, centerVertical)
         dialDrawable?.draw(canvas)
 
@@ -149,15 +161,17 @@ class ColorDialView @JvmOverloads constructor(
         }
     }
 
-    private fun refreshValues( withScale: Boolean = false) {
+    private fun refreshValues(withScale: Boolean = false) {
         val localScale = if (withScale) scale else 1f
         totalLeftPadding = paddingLeft + extraPadding * localScale
         totalTopPadding = paddingTop + extraPadding * localScale
         totalRightPadding = paddingRight + extraPadding * localScale
         totalBottomPadding = paddingBottom + extraPadding * localScale
 
-        horizontalSize = paddingLeft + paddingRight + (extraPadding * localScale * 2) + dialDiameter * localScale
-        verticalSize = paddingTop + paddingBottom + (extraPadding * 2 * localScale) + dialDiameter * localScale
+        horizontalSize =
+            paddingLeft + paddingRight + (extraPadding * localScale * 2) + dialDiameter * localScale
+        verticalSize =
+            paddingTop + paddingBottom + (extraPadding * 2 * localScale) + dialDiameter * localScale
 
         tickPositionVertical = paddingTop + extraPadding * localScale / 2f
         centerHorizontal =
@@ -174,5 +188,58 @@ class ColorDialView @JvmOverloads constructor(
             value.toFloat(),
             context.resources.displayMetrics
         ).toInt()
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+
+        dragStartX = event.x
+        dragStartY = event.y
+        if (event.action == ACTION_DOWN || event.action == ACTION_MOVE) {
+            dragging = true
+
+            // Figure out snap angle
+            if (getSnapAngle(dragStartX, dragStartY)) {
+                invalidate()
+            }
+        }
+        if (event.action == ACTION_UP) {
+            dragging = false
+        }
+        return true
+    }
+
+    private fun cartesianToPolar(x: Float, y: Float): Float {
+        val angle = Math.toDegrees((atan2(y.toDouble(), x.toDouble())))
+            .toFloat()
+        return when (angle) {
+            in 0..180 -> angle
+            in -180..0 -> angle + 360
+            else -> angle
+        }
+    }
+
+    /**
+     * Gets the nearest angle to snap to when rotating the dial
+     * We want to first convert the android cartesian with 0,0 at top left to a
+     *      traditional cartesian with 0,0 in the middle
+     *
+     */
+    private fun getSnapAngle(x: Float, y: Float): Boolean {
+        val dragAngle = cartesianToPolar(x - horizontalSize / 2, (verticalSize - y) - verticalSize / 2)
+        val nearest: Int = (getNearestAngle(dragAngle) / angleBetweenColors).roundToInt()
+        val newAngle: Float = nearest * angleBetweenColors
+        var shouldUpdate = false
+        if (newAngle != snapAngle) {
+            shouldUpdate = true
+            selectedPosition = nearest
+        }
+        snapAngle = newAngle
+        return shouldUpdate
+    }
+
+    private fun getNearestAngle(dragAngle: Float): Float {
+        var adjustedAngle = (360 - dragAngle) + 90
+        while (adjustedAngle > 360) adjustedAngle -= 360
+        return adjustedAngle
     }
 }

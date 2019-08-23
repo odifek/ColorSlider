@@ -10,4 +10,22 @@
         <item>#B88615</item>
         <item>#3F51B5</item>
     </string-array>
+
+    <string-array name="multi_color_array">
+        <item>#FFC107</item>
+        <item>#03A9F4</item>
+        <item>#4CAF50</item>
+        <item>#F44336</item>
+        <item>#673AB7</item>
+        <item>#B88615</item>
+        <item>#3F51B5</item>
+
+        <item>#07FFEA</item>
+        <item>#941D54</item>
+        <item>#AF4C74</item>
+        <item>#F43636</item>
+        <item>#B7443A</item>
+        <item>#220909</item>
+        <item>#725F23</item>
+    </string-array>
 </resources>
