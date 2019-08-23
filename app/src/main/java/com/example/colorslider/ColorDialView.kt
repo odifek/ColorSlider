@@ -123,6 +123,30 @@ class ColorDialView @JvmOverloads constructor(
 
     }
 
+    private var listeners: ArrayList<(Int) -> Unit> = arrayListOf()
+
+    var selectedColorValue: Int = android.R.color.transparent
+        set(value) {
+            val index = colors.indexOf(value)
+            selectedPosition = if (index == -1) 0 else index
+            snapAngle = (selectedPosition * angleBetweenColors).toFloat()
+            invalidate()
+        }
+
+    fun addListener(function: (Int) -> Unit) {
+        listeners.add(function)
+    }
+
+    private fun broadcastColorChange() {
+        listeners.forEach {
+            if (selectedPosition > colors.size - 1) {
+                it(colors[0])
+            } else {
+                it(colors[selectedPosition])
+            }
+        }
+    }
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
 
         if (scaleToFit) {
@@ -199,6 +223,7 @@ class ColorDialView @JvmOverloads constructor(
 
             // Figure out snap angle
             if (getSnapAngle(dragStartX, dragStartY)) {
+                broadcastColorChange()
                 invalidate()
             }
         }
@@ -225,7 +250,8 @@ class ColorDialView @JvmOverloads constructor(
      *
      */
     private fun getSnapAngle(x: Float, y: Float): Boolean {
-        val dragAngle = cartesianToPolar(x - horizontalSize / 2, (verticalSize - y) - verticalSize / 2)
+        val dragAngle =
+            cartesianToPolar(x - horizontalSize / 2, (verticalSize - y) - verticalSize / 2)
         val nearest: Int = (getNearestAngle(dragAngle) / angleBetweenColors).roundToInt()
         val newAngle: Float = nearest * angleBetweenColors
         var shouldUpdate = false

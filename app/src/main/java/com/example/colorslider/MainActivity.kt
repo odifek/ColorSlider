@@ -10,8 +10,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        colorSeekBar.addListener { color ->
-//            image_selected_color.setBackgroundColor(color)
-//        }
+        colorSeekBar.addListener { color ->
+            image_selected_color.setBackgroundColor(color)
+        }
     }
 }
